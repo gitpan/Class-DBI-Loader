@@ -1,21 +1,9 @@
 package Class::DBI::Loader;
-# $Id: Loader.pm,v 1.7 2004/07/11 02:24:08 ikebe Exp $
+
 use strict;
 use vars qw($VERSION);
-$VERSION = '0.03';
 
-sub new {
-    my($class, %args) = @_;
-    my $dsn = $args{dsn};
-    my($driver) = $dsn =~ m/^dbi:(\w*?)(?:\((.*?)\))?:/i;
-    my $impl = "Class::DBI::Loader::". $driver;
-    eval qq/use $impl/;
-    return $impl->new(%args);
-}
- 
-1;
-
-__END__
+$VERSION = '0.04';
 
 =head1 NAME
 
@@ -71,16 +59,34 @@ class names are defined by table names and namespace option.
 
 Class::DBI::Loader supports MySQL, Postgres and SQLite.
 
+=cut
+
+sub new {
+    my ( $class, %args ) = @_;
+    my $dsn = $args{dsn};
+    my ($driver) = $dsn =~ m/^dbi:(\w*?)(?:\((.*?)\))?:/i;
+    my $impl = "Class::DBI::Loader::" . $driver;
+    eval qq/use $impl/;
+    return $impl->new(%args);
+}
 
 =head1 AUTHOR
 
-IKEBE Tomohiro E<lt>ikebe@edge.co.jpE<gt>
+Sebastian Riedel, C<sri@oook.de>
 
-This library is free software; you can redistribute it and/or modify
-it under the same terms as Perl itself.
+=head1 AUTHOR EMERITUS
+
+IKEBE Tomohiro, C<ikebe@edge.co.jp>
+
+=head1 LICENSE
+
+This library is free software; you can redistribute it and/or modify it under
+the same terms as Perl itself.
 
 =head1 SEE ALSO
 
-L<Class::DBI> L<Class::DBI::mysql> L<Class::DBI::Pg> L<Class::DBI::SQLite>
+L<Class::DBI>, L<Class::DBI::mysql>, L<Class::DBI::Pg>, L<Class::DBI::SQLite>
 
 =cut
+
+1;

@@ -1,0 +1,60 @@
+NAME
+    Class::DBI::Loader - dynamic definition of Class::DBI sub classes.
+
+SYNOPSIS
+      use Class::DBI::Loader;
+
+      my $loader = Class::DBI::Loader->new(
+        dsn => "dbi:mysql:dbname",
+        user => "root",
+        password => "",
+        namespace => "Data",
+      );
+      my $class = $loader->find_class('film'); # $class => Data::Film
+      my $obj = $class->retrieve(1);
+
+    use with mod_perl
+
+    in your startup.pl
+
+      # load all tables
+      use Class::DBI::Loader;
+      my $loader = Class::DBI::Loader->new(
+        dsn => "dbi:mysql:dbname",
+        user => "root",
+        password => "",
+        namespace => "Data",
+      );
+
+    in your web application.
+
+      use strict;
+
+      # you can use Data::Film directly
+      my $film = Data::Film->retrieve($id);
+
+DESCRIPTION
+    Class::DBI::Loader automate the definition of Class::DBI sub-classes.
+    scan table schemas and setup columns, primary key.
+
+    class names are defined by table names and namespace option.
+
+     +-----------+-----------+-----------+
+     |   table   | namespace | class     |
+     +-----------+-----------+-----------+
+     |   foo     | Data      | Data::Foo |
+     |   foo_bar |           | FooBar    |
+     +-----------+-----------+-----------+
+
+    Class::DBI::Loader supports MySQL, Postgres and SQLite.
+
+AUTHOR
+    IKEBE Tomohiro <ikebe@edge.co.jp>
+
+    This library is free software; you can redistribute it and/or modify it
+    under the same terms as Perl itself.
+
+SEE ALSO
+    the Class::DBI manpage the Class::DBI::mysql manpage the Class::DBI::Pg
+    manpage the Class::DBI::SQLite manpage
+

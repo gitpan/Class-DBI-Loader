@@ -1,0 +1,13 @@
+Changes
+README
+MANIFEST
+Makefile.PL
+lib/Class/DBI/Loader.pm
+lib/Class/DBI/Loader/Generic.pm
+lib/Class/DBI/Loader/Pg.pm
+lib/Class/DBI/Loader/SQLite.pm
+lib/Class/DBI/Loader/mysql.pm
+t/00_compile.t
+t/01_mysql.t
+t/02_pg.t
+t/03_sqlite.t

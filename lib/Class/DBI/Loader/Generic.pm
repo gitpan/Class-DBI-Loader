@@ -5,7 +5,7 @@ use vars qw($VERSION);
 use Carp;
 use Lingua::EN::Inflect;
 
-$VERSION = '0.12';
+$VERSION = '0.13';
 
 =head1 NAME
 
@@ -189,7 +189,8 @@ sub _relationships {
             for my $res ( @{ $sth->fetchall_arrayref( {} ) } ) {
                 my $column = $res->{FK_COLUMN_NAME};
                 my $other  = $res->{UK_TABLE_NAME};
-                $self->_has_a_many( $table, $column, $other );
+                eval { $self->_has_a_many( $table, $column, $other ) };
+                warn qq/has_a_many failed "$@"/ if $@ && $self->debug;
             }
         }
     }

@@ -8,7 +8,7 @@ use Carp;
 require Class::DBI::mysql;
 require Class::DBI::Loader::Generic;
 
-$VERSION = '0.12';
+$VERSION = '0.13';
 
 =head1 NAME
 
@@ -42,24 +42,25 @@ sub _relationships {
     my @tables = $self->tables;
     my $dbh    = $self->find_class( $tables[0] )->db_Main;
     my $dsn    = $self->{_datasource}[0];
-    $dsn =~ m/\:([\w\.]*)[\w\=\;]*$/;
-    my $dbname = $1;
+    my %conn   =
+      $dsn =~ m/\Adbi:\w+(?:\(.*?\))?:(.+)\z/i
+      && index( $1, '=' ) >= 0
+      ? split( /[=;]/, $1 )
+      : ( database => $1 );
+    my $dbname = $conn{database} || $conn{dbname} || $conn{db};
     die("Can't figure out the table name automatically.") if !$dbname;
+    my $quoter = $dbh->get_info(29);
+    die("Can't figure out the table name automatically.") if !$dbname;
+
     foreach my $table (@tables) {
         my $query = "SHOW TABLE STATUS FROM $dbname LIKE '$table'";
         my $sth   = $dbh->prepare($query)
           or die("Cannot get table status: $table");
         $sth->execute;
-        my $comment = $sth->fetchrow_hashref->{comment};
+        ( my $comment = $sth->fetchrow_hashref->{comment} ) =~ s/$quoter//g;
         $sth->finish;
-        foreach ( split( /\;/, $comment ) ) {
-            next unless $_ =~ m/REFER/i;
-            my ( $local_key, $foreign_key ) = split( /\sREFER\s/, $_ );
-            $local_key =~ m/\((\w*)\)/;
-            my $column = $1;
-            $foreign_key =~ m/(\w*)\/+(\w*)\((\w*)\)/;
-            my $other = $2;
-            $self->_has_a_many( $table, $column, $other );
+        while ( $comment =~ m!\((\w+)\)\sREFER\s\w+/(\w+)\(\w+\)!g ) {
+            $self->_has_a_many( $table, $1, $2 );
         }
     }
 }
@@ -71,7 +72,8 @@ sub _tables {
     foreach my $table ( $dbh->tables ) {
         my $quoter = $dbh->get_info(29);
         $table =~ s/$quoter//g;
-        push @tables, $table;
+        push @tables, $1
+          if $table =~ /\A(\w+)\z/;
     }
     return @tables;
 }

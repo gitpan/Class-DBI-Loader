@@ -8,7 +8,7 @@ use Carp;
 require Class::DBI::SQLite;
 require Class::DBI::Loader::Generic;
 
-$VERSION = '0.13';
+$VERSION = '0.14';
 
 =head1 NAME
 
@@ -55,7 +55,8 @@ SELECT sql FROM sqlite_master WHERE tbl_name = ?
 
             # Grab reference
             if ( $col =~ /^(\w+).*REFERENCES\s+(\w+)/i ) {
-                $self->_has_a_many( $table, $1, $2 );
+                eval { $self->_has_a_many( $table, $1, $2 ) };
+                warn qq/has_a_many failed "$@"/ if $@ && $self->debug;
             }
         }
     }

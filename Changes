@@ -1,5 +1,8 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.14  Fri Feb 04 18:00:00 2005
+        - bugfixes
+
 0.13  Fri Feb 04 02:00:00 2005
         - misc mysql fixes (Dan Kubb)
 

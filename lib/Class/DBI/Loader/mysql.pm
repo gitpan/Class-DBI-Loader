@@ -8,7 +8,7 @@ use Carp;
 require Class::DBI::mysql;
 require Class::DBI::Loader::Generic;
 
-$VERSION = '0.13';
+$VERSION = '0.14';
 
 =head1 NAME
 
@@ -50,7 +50,6 @@ sub _relationships {
     my $dbname = $conn{database} || $conn{dbname} || $conn{db};
     die("Can't figure out the table name automatically.") if !$dbname;
     my $quoter = $dbh->get_info(29);
-    die("Can't figure out the table name automatically.") if !$dbname;
 
     foreach my $table (@tables) {
         my $query = "SHOW TABLE STATUS FROM $dbname LIKE '$table'";
@@ -60,7 +59,8 @@ sub _relationships {
         ( my $comment = $sth->fetchrow_hashref->{comment} ) =~ s/$quoter//g;
         $sth->finish;
         while ( $comment =~ m!\((\w+)\)\sREFER\s\w+/(\w+)\(\w+\)!g ) {
-            $self->_has_a_many( $table, $1, $2 );
+            eval { $self->_has_a_many( $table, $1, $2 ) };
+            warn qq/has_a_many failed "$@"/ if $@ && $self->debug;
         }
     }
 }

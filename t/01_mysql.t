@@ -11,10 +11,11 @@ SKIP: {
     skip "Class::DBI::mysql is not installed", 6 if $@;
 
     print STDERR "\n";
+    my $hostname = read_input("please specify the MySQL host");
     my $database = read_input("please specify the writable MySQL database");
     my $user = read_input("please specify the mysql username");
     my $password = read_input("please specify the mysql password");
-    my $dsn = "dbi:mysql:$database";
+    my $dsn = "dbi:mysql:$database;host=$hostname";
     $dbh = DBI->connect($dsn, $user, $password, { 
 	RaiseError => 1,
 	PrintError => 1

@@ -1,4 +1,8 @@
-2002-08-26  IKEBE Tomohiro  <ikebe@edge.co.jp>
+2004-02-24  IKEBE Tomohiro  <ikebe@shebang.jp>
+
+	* fixed mysql quoted table names problem.
+
+2002-08-26  IKEBE Tomohiro  <ikebe@shebang.jp>
 
 	* original version.
 

@@ -1,8 +1,8 @@
 package Class::DBI::Loader;
-# $Id: Loader.pm,v 1.5 2002/08/26 08:03:40 ikechin Exp $
+# $Id: Loader.pm,v 1.6 2004/02/24 05:52:14 ikebe Exp $
 use strict;
 use vars qw($VERSION);
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 sub new {
     my($class, %args) = @_;

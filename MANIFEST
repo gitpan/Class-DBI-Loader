@@ -11,3 +11,4 @@ t/00_compile.t
 t/01_mysql.t
 t/02_pg.t
 t/03_sqlite.t
+META.yml                                Module meta-data (added by MakeMaker)

@@ -1,5 +1,5 @@
 package Class::DBI::Loader::mysql;
-# $Id: mysql.pm,v 1.4 2002/08/26 08:03:40 ikechin Exp $
+# $Id: mysql.pm,v 1.5 2004/02/24 05:48:45 ikebe Exp $
 use strict;
 use DBI;
 use Carp ();
@@ -15,6 +15,8 @@ sub _load_classes {
     my $self = shift;
     my $dbh = DBI->connect(@{$self->_datasource}) or _croak($DBI::errstr);
     foreach my $table($dbh->tables) {
+	my $quoter = $dbh->get_info(29);
+	$table =~ s/$quoter//g;
 	my $class = $self->_table2class($table);
 	no strict 'refs';
 	@{"$class\::ISA"} = qw(Class::DBI::mysql);

@@ -1,17 +1,18 @@
 NAME
-    Class::DBI::Loader - dynamic definition of Class::DBI sub classes.
+    Class::DBI::Loader - Dynamic definition of Class::DBI sub classes.
 
 SYNOPSIS
       use Class::DBI::Loader;
 
       my $loader = Class::DBI::Loader->new(
-        dsn => "dbi:mysql:dbname",
-        user => "root",
-        password => "",
-        namespace => "Data",
-        additional_classes => qw/Class::DBI::AbstractSearch/,
+        dsn                     => "dbi:mysql:dbname",
+        user                    => "root",
+        password                => "",
+        namespace               => "Data",
+        additional_classes      => qw/Class::DBI::AbstractSearch/,
         additional_base_classes => qw/My::Stuff/,
-        constraint => '^foo.*'
+        constraint              => '^foo.*',
+        relationships           => 1
       );
       my $class = $loader->find_class('film'); # $class => Data::Film
       my $obj = $class->retrieve(1);
@@ -23,9 +24,9 @@ SYNOPSIS
       # load all tables
       use Class::DBI::Loader;
       my $loader = Class::DBI::Loader->new(
-        dsn => "dbi:mysql:dbname",
-        user => "root",
-        password => "",
+        dsn       => "dbi:mysql:dbname",
+        user      => "root",
+        password  => "",
         namespace => "Data",
       );
 
@@ -51,16 +52,23 @@ DESCRIPTION
 
     Class::DBI::Loader supports MySQL, Postgres and SQLite.
 
+    See Class::DBI::Loader::Generic.
+
 AUTHOR
     Sebastian Riedel, "sri@oook.de"
 
 AUTHOR EMERITUS
     IKEBE Tomohiro, "ikebe@edge.co.jp"
 
+THANK YOU
+    Randal Schwartz, Simon Flack and all the others who've helped.
+
 LICENSE
     This library is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
 
 SEE ALSO
-    Class::DBI, Class::DBI::mysql, Class::DBI::Pg, Class::DBI::SQLite
+    Class::DBI, Class::DBI::mysql, Class::DBI::Pg, Class::DBI::SQLite,
+    Class::DBI::Loader::Generic, Class::DBI::Loader::mysql,
+    Class::DBI::Loader::Pg, Class::DBI::Loader::SQLite
 

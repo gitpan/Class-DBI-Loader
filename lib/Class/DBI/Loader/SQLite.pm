@@ -1,18 +1,18 @@
 package Class::DBI::Loader::SQLite;
 
 use strict;
+use base 'Class::DBI::Loader::Generic';
+use vars '$VERSION';
 use DBI;
 use Carp;
 require Class::DBI::SQLite;
 require Class::DBI::Loader::Generic;
-use base qw(Class::DBI::Loader::Generic);
-use vars qw($VERSION);
 
-$VERSION = '0.07';
+$VERSION = '0.10';
 
 =head1 NAME
 
-Class::DBI::Loader::SQLite - Class::DBI::Loader SQLite implementation.
+Class::DBI::Loader::SQLite - Class::DBI::Loader SQLite Implementation.
 
 =head1 SYNOPSIS
 
@@ -20,7 +20,7 @@ Class::DBI::Loader::SQLite - Class::DBI::Loader SQLite implementation.
 
   # $loader is a Class::DBI::Loader::SQLite
   my $loader = Class::DBI::Loader->new(
-    dsn => "dbi:SQLite:dbname=/path/to/dbfile",
+    dsn       => "dbi:SQLite:dbname=/path/to/dbfile",
     namespace => "Data",
   );
   my $class = $loader->find_class('film'); # $class => Data::Film
@@ -28,7 +28,7 @@ Class::DBI::Loader::SQLite - Class::DBI::Loader SQLite implementation.
 
 =head1 DESCRIPTION
 
-please see L<Class::DBI::Loader>
+See L<Class::DBI::Loader>, L<Class::DBI::Loader::Generic>.
 
 =cut
 
@@ -36,7 +36,7 @@ sub _db_class { return 'Class::DBI::SQLite' }
 
 sub _tables {
     my $self = shift;
-    my $dbh  = DBI->connect( @{ $self->_datasource } ) or croak($DBI::errstr);
+    my $dbh  = DBI->connect( @{ $self->{_datasource} } ) or croak($DBI::errstr);
     my $sth  = $dbh->prepare("SELECT * FROM sqlite_master");
     $sth->execute;
     my @tables;
@@ -49,7 +49,7 @@ sub _tables {
 
 =head1 SEE ALSO
 
-L<Class::DBI::Loader>
+L<Class::DBI::Loader>, L<Class::DBI::Loader::Generic>
 
 =cut
 

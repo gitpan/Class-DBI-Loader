@@ -1,26 +1,27 @@
 package Class::DBI::Loader;
 
 use strict;
-use vars qw($VERSION);
+use vars '$VERSION';
 
-$VERSION = '0.07';
+$VERSION = '0.10';
 
 =head1 NAME
 
-Class::DBI::Loader - dynamic definition of Class::DBI sub classes.
+Class::DBI::Loader - Dynamic definition of Class::DBI sub classes.
 
 =head1 SYNOPSIS
 
   use Class::DBI::Loader;
 
   my $loader = Class::DBI::Loader->new(
-    dsn => "dbi:mysql:dbname",
-    user => "root",
-    password => "",
-    namespace => "Data",
-    additional_classes => qw/Class::DBI::AbstractSearch/,
+    dsn                     => "dbi:mysql:dbname",
+    user                    => "root",
+    password                => "",
+    namespace               => "Data",
+    additional_classes      => qw/Class::DBI::AbstractSearch/,
     additional_base_classes => qw/My::Stuff/,
-    constraint => '^foo.*'
+    constraint              => '^foo.*',
+    relationships           => 1
   );
   my $class = $loader->find_class('film'); # $class => Data::Film
   my $obj = $class->retrieve(1);
@@ -32,9 +33,9 @@ in your startup.pl
   # load all tables
   use Class::DBI::Loader;
   my $loader = Class::DBI::Loader->new(
-    dsn => "dbi:mysql:dbname",
-    user => "root",
-    password => "",
+    dsn       => "dbi:mysql:dbname",
+    user      => "root",
+    password  => "",
     namespace => "Data",
   );
 
@@ -62,6 +63,8 @@ class names are defined by table names and namespace option.
 
 Class::DBI::Loader supports MySQL, Postgres and SQLite.
 
+See L<Class::DBI::Loader::Generic>.
+
 =cut
 
 sub new {
@@ -81,6 +84,10 @@ Sebastian Riedel, C<sri@oook.de>
 
 IKEBE Tomohiro, C<ikebe@edge.co.jp>
 
+=head1 THANK YOU
+
+Randal Schwartz, Simon Flack and all the others who've helped.
+
 =head1 LICENSE
 
 This library is free software; you can redistribute it and/or modify it under
@@ -88,7 +95,9 @@ the same terms as Perl itself.
 
 =head1 SEE ALSO
 
-L<Class::DBI>, L<Class::DBI::mysql>, L<Class::DBI::Pg>, L<Class::DBI::SQLite>
+L<Class::DBI>, L<Class::DBI::mysql>, L<Class::DBI::Pg>, L<Class::DBI::SQLite>,
+L<Class::DBI::Loader::Generic>, L<Class::DBI::Loader::mysql>,
+L<Class::DBI::Loader::Pg>, L<Class::DBI::Loader::SQLite>
 
 =cut
 

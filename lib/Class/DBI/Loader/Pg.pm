@@ -1,18 +1,18 @@
 package Class::DBI::Loader::Pg;
 
 use strict;
+use base 'Class::DBI::Loader::Generic';
+use vars '$VERSION';
 use DBI;
 use Carp;
 require Class::DBI::Pg;
 require Class::DBI::Loader::Generic;
-use base qw(Class::DBI::Loader::Generic);
-use vars qw($VERSION);
 
-$VERSION = '0.07';
+$VERSION = '0.10';
 
 =head1 NAME
 
-Class::DBI::Loader::Pg - Class::DBI::Loader Postgres implementation.
+Class::DBI::Loader::Pg - Class::DBI::Loader Postgres Implementation.
 
 =head1 SYNOPSIS
 
@@ -20,9 +20,9 @@ Class::DBI::Loader::Pg - Class::DBI::Loader Postgres implementation.
 
   # $loader is a Class::DBI::Loader::Pg
   my $loader = Class::DBI::Loader->new(
-    dsn => "dbi:Pg:dbname=dbname",
-    user => "postgres",
-    password => "",
+    dsn       => "dbi:Pg:dbname=dbname",
+    user      => "postgres",
+    password  => "",
     namespace => "Data",
   );
   my $class = $loader->find_class('film'); # $class => Data::Film
@@ -30,7 +30,7 @@ Class::DBI::Loader::Pg - Class::DBI::Loader Postgres implementation.
 
 =head1 DESCRIPTION
 
-please see L<Class::DBI::Loader>
+See L<Class::DBI::Loader>, L<Class::DBI::Loader::Generic>.
 
 =cut
 
@@ -38,7 +38,7 @@ sub _db_class { return 'Class::DBI::Pg' }
 
 sub _tables {
     my $self = shift;
-    my $dbh = DBI->connect( @{ $self->_datasource } ) or croak($DBI::errstr);
+    my $dbh = DBI->connect( @{ $self->{_datasource} } ) or croak($DBI::errstr);
     my @tables;
     if ( $DBD::Pg::VERSION >= 1.31 ) {
         return $dbh->tables( undef, "public", "", "table", { noprefix => 1 } );
@@ -48,7 +48,7 @@ sub _tables {
 
 =head1 SEE ALSO
 
-L<Class::DBI::Loader>
+L<Class::DBI::Loader>, L<Class::DBI::Loader::Generic>
 
 =cut
 

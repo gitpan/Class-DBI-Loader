@@ -1,18 +1,18 @@
 package Class::DBI::Loader::mysql;
 
 use strict;
+use base 'Class::DBI::Loader::Generic';
+use vars '$VERSION';
 use DBI;
 use Carp;
 require Class::DBI::mysql;
 require Class::DBI::Loader::Generic;
-use base qw(Class::DBI::Loader::Generic);
-use vars qw($VERSION);
 
-$VERSION = '0.07';
+$VERSION = '0.10';
 
 =head1 NAME
 
-Class::DBI::Loader::mysql - Class::DBI::Loader mysql implementation.
+Class::DBI::Loader::mysql - Class::DBI::Loader mysql Implementation.
 
 =head1 SYNOPSIS
 
@@ -20,9 +20,9 @@ Class::DBI::Loader::mysql - Class::DBI::Loader mysql implementation.
 
   # $loader is a Class::DBI::Loader::mysql
   my $loader = Class::DBI::Loader->new(
-    dsn => "dbi:mysql:dbname",
-    user => "root",
-    password => "",
+    dsn       => "dbi:mysql:dbname",
+    user      => "root",
+    password  => "",
     namespace => "Data",
   );
   my $class = $loader->find_class('film'); # $class => Data::Film
@@ -30,7 +30,7 @@ Class::DBI::Loader::mysql - Class::DBI::Loader mysql implementation.
 
 =head1 DESCRIPTION
 
-please see L<Class::DBI::Loader>
+See L<Class::DBI::Loader>, L<Class::DBI::Loader::Generic>.
 
 =cut
 
@@ -38,7 +38,7 @@ sub _db_class { return 'Class::DBI::mysql' }
 
 sub _tables {
     my $self = shift;
-    my $dbh = DBI->connect( @{ $self->_datasource } ) or croak($DBI::errstr);
+    my $dbh = DBI->connect( @{ $self->{_datasource} } ) or croak($DBI::errstr);
     my @tables;
     foreach my $table ( $dbh->tables ) {
         my $quoter = $dbh->get_info(29);
@@ -50,7 +50,7 @@ sub _tables {
 
 =head1 SEE ALSO
 
-L<Class::DBI::Loader>
+L<Class::DBI::Loader>, L<Class::DBI::Loader::Generic>
 
 =cut
 

@@ -9,6 +9,9 @@ SYNOPSIS
         user => "root",
         password => "",
         namespace => "Data",
+        additional_classes => qw/Class::DBI::AbstractSearch/,
+        additional_base_classes => qw/My::Stuff/,
+        constraint => '^foo.*'
       );
       my $class = $loader->find_class('film'); # $class => Data::Film
       my $obj = $class->retrieve(1);

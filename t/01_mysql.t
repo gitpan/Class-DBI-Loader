@@ -4,16 +4,20 @@ use Test::More tests => 6;
 use Class::DBI::Loader;
 
 my $dbh;
+my $database = $ENV{MYSQL_NAME};
+my $user     = $ENV{MYSQL_USER};
+my $password = $ENV{MYSQL_PASS};
+
 SKIP: {
     eval { require Class::DBI::mysql; };
     skip "Class::DBI::mysql is not installed", 6 if $@;
 
-    print STDERR "\n";
-    my $hostname = read_input("please specify the MySQL host");
-    my $database = read_input("please specify the writable MySQL database");
-    my $user     = read_input("please specify the mysql username");
-    my $password = read_input("please specify the mysql password");
-    my $dsn      = "dbi:mysql:$database;host=$hostname";
+    skip
+'You need to set the MYSQL_NAME, MYSQL_USER and MYSQL_PASS environment variables',
+      6
+      unless ( $database && $user );
+
+    my $dsn = "dbi:mysql:$database";
     $dbh = DBI->connect(
         $dsn, $user,
         $password,
@@ -55,9 +59,10 @@ SQL
     $sth->finish;
 
     my $loader = Class::DBI::Loader->new(
-        dsn      => $dsn,
-        user     => $user,
-        password => $password,
+        dsn        => $dsn,
+        user       => $user,
+        password   => $password,
+        constraint => '^loader_test.+'
     );
     is( $loader->find_class("loader_test1"), "LoaderTest1" );
     is( $loader->find_class("loader_test2"), "LoaderTest2" );
@@ -69,14 +74,6 @@ SQL
     is( $class2->retrieve_all, 4 );
     my ($obj2) = $class2->search( dat => 'bbb' );
     is( $obj2->id, 2 );
-}
-
-sub read_input {
-    my $prompt = shift;
-    print STDERR "$prompt: ";
-    my $value = <STDIN>;
-    chomp $value;
-    return $value;
 }
 
 END {

@@ -53,8 +53,9 @@ SQL
     }
 
     my $loader = Class::DBI::Loader->new(
-        dsn       => $dsn,
-        namespace => 'SQLiteTest',
+        dsn        => $dsn,
+        namespace  => 'SQLiteTest',
+        constraint => '^loader_test.*'
     );
     is( $loader->find_class("loader_test1"), "SQLiteTest::LoaderTest1" );
     is( $loader->find_class("loader_test2"), "SQLiteTest::LoaderTest2" );

@@ -1,5 +1,13 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.06  Thu Dec 14 21:00:00 2004
+        - cleanup, driver classes now just define _tables() and
+          _db_class() (Simon Flack)
+        - constraint support, only load tables matching regex
+        - aditional_classes support (Simon Flack)
+        - additional_base_classes support
+        - new tests
+
 0.05  Sat Nov 13 19:30:00 2004
         - more cleanup
 

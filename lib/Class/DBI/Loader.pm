@@ -3,7 +3,7 @@ package Class::DBI::Loader;
 use strict;
 use vars qw($VERSION);
 
-$VERSION = '0.05';
+$VERSION = '0.06';
 
 =head1 NAME
 
@@ -18,6 +18,9 @@ Class::DBI::Loader - dynamic definition of Class::DBI sub classes.
     user => "root",
     password => "",
     namespace => "Data",
+    additional_classes => qw/Class::DBI::AbstractSearch/,
+    additional_base_classes => qw/My::Stuff/,
+    constraint => '^foo.*'
   );
   my $class = $loader->find_class('film'); # $class => Data::Film
   my $obj = $class->retrieve(1);

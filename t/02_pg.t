@@ -5,15 +5,19 @@ use Class::DBI::Loader;
 use DBI;
 
 my $dbh;
+my $database = $ENV{PG_NAME};
+my $user     = $ENV{PG_USER};
+my $password = $ENV{PG_PASS};
+
 SKIP: {
 
     eval { require Class::DBI::Pg; };
     skip "Class::DBI::Pg is not installed", 6 if $@;
 
-    print STDERR "\n";
-    my $database = read_input("please specify the writable Postgres database");
-    my $user     = read_input("please specify the Postgres Postgres username");
-    my $password = read_input("please specify the Postgres Postgres password");
+    skip
+      'You need to set the PG_NAME, PG_USER and PG_PASS environment variables',
+      6
+      unless ( $database && $user );
 
     my $dsn = "dbi:Pg:dbname=$database";
     $dbh = DBI->connect(
@@ -57,10 +61,11 @@ SQL
     }
 
     my $loader = Class::DBI::Loader->new(
-        dsn       => $dsn,
-        user      => $user,
-        password  => $password,
-        namespace => 'PgTest',
+        dsn        => $dsn,
+        user       => $user,
+        password   => $password,
+        namespace  => 'PgTest',
+        constraint => '^loader_test.*'
     );
     is( $loader->find_class("loader_test1"), "PgTest::LoaderTest1" );
     is( $loader->find_class("loader_test2"), "PgTest::LoaderTest2" );
@@ -77,20 +82,10 @@ SQL
     $class2->db_Main->disconnect;
 }
 
-sub read_input {
-    my $prompt = shift;
-    print STDERR "$prompt: ";
-    my $value = <STDIN>;
-    chomp $value;
-    return $value;
-}
-
 END {
     if ($dbh) {
         $dbh->do("DROP TABLE loader_test1");
         $dbh->do("DROP TABLE loader_test2");
-        $dbh->do("DROP SEQUENCE loader_test1_id_seq");
-        $dbh->do("DROP SEQUENCE loader_test2_id_seq");
         $dbh->disconnect;
     }
 }

@@ -5,7 +5,7 @@ use vars qw($VERSION);
 use Carp;
 use Lingua::EN::Inflect;
 
-$VERSION = '0.16';
+$VERSION = '0.17';
 
 =head1 NAME
 
@@ -32,6 +32,10 @@ List of additional classes which your table classes will use.
 =head3 constraint
 
 Only load tables matching regex.
+
+=head3 exclude
+
+Exclude tables matching regex.
 
 =head3 debug
 
@@ -81,6 +85,7 @@ sub new {
         _additional      => $additional,
         _additional_base => $additional_base,
         _constraint      => $args{constraint} || '.*',
+        _exclude         => $args{exclude},
         _relationships   => $args{relationships},
         CLASSES          => {},
     }, $class;
@@ -163,8 +168,10 @@ sub _load_classes {
     my $additional_base = join '', map "use base '$_';",
       @{ $self->{_additional_base} };
     my $constraint = $self->{_constraint};
+    my $exclude = $self->{_exclude};
     foreach my $table (@tables) {
         next unless $table =~ /$constraint/;
+        next if (defined $exclude && $table =~ /$exclude/);
         warn qq/Found table "$table"/ if $self->debug;
         my $class = $self->_table2class($table);
         warn qq/Initializing "$class"/ if $self->debug;

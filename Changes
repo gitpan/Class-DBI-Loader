@@ -1,5 +1,8 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.17  Sat Feb 12 01:00:00 2005
+        - exclude support (David Naughton)
+
 0.16  Sun Feb 20 17:00:00 2005
         - added $dbh->disconnect to mysql loader (Dan Kubb)
 

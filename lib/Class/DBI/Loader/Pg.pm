@@ -1,5 +1,5 @@
 package Class::DBI::Loader::Pg;
-# $Id: Pg.pm,v 1.9 2002/08/26 08:03:40 ikechin Exp $
+# $Id: Pg.pm,v 1.10 2004/07/11 02:23:49 ikebe Exp $
 use strict;
 use DBI;
 use Carp ();
@@ -8,13 +8,20 @@ require Class::DBI::Loader::Generic;
 use base qw(Class::DBI::Loader::Generic);
 use vars qw($VERSION);
 
-$VERSION = '0.01';
+$VERSION = '0.02';
 
 sub _croak { require Carp; Carp::croak(@_); }
 sub _load_classes {
     my $self = shift;
     my $dbh = DBI->connect(@{$self->_datasource}) or _croak($DBI::errstr);
-    foreach my $table($dbh->tables) {
+    my @tables;
+    if ($DBD::Pg::VERSION >= 1.31) {
+	@tables = $dbh->tables(undef, "public", "", "table" , {noprefix => 1});
+    }
+    else {
+	@tables = $dbh->tables;
+    }
+    foreach my $table(@tables) {
 	my $class = $self->_table2class($table);
 	no strict 'refs';
 	@{"$class\::ISA"} = qw(Class::DBI::Pg);

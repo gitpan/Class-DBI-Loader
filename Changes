@@ -1,3 +1,7 @@
+2004-07-11  IKEBE Tomohiro  <ikebe@shebang.jp>
+
+	* fixed Pg $dbh->tables. 
+
 2004-02-24  IKEBE Tomohiro  <ikebe@shebang.jp>
 
 	* fixed mysql quoted table names problem.

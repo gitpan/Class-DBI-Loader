@@ -6,7 +6,7 @@ use Carp;
 require Class::Accessor;
 use base qw(Class::Accessor);
 
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 __PACKAGE__->mk_accessors(qw(_datasource _namespace));
 
@@ -21,6 +21,8 @@ ABSTRACT CLASS
 =head1 DESCRIPTION
 
 please see L<Class::DBI::Loader>
+
+=head2 METHODS
 
 =cut
 
@@ -44,15 +46,39 @@ sub new {
     $self;
 }
 
+=head3 find_class
+
+Returns a tables class.
+
+    my $class = $loader->find_class($table);
+
+=cut
+
 sub find_class {
     my ( $self, $table ) = @_;
     return $self->{CLASSES}->{$table};
 }
 
+=head3 classes
+
+Returns a sorted list of classes.
+
+    my $@classes = $loader->classes;
+
+=cut
+
 sub classes {
     my $self = shift;
     return sort values %{ $self->{CLASSES} };
 }
+
+=head3 tables
+
+Returns a sorted list of tables.
+
+    my @tables = $loader->tables;
+
+=cut
 
 sub tables {
     my $self = shift;

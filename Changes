@@ -1,5 +1,8 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.07  Thu Dec 14 22:00:00 2004
+        - better documentation
+
 0.06  Thu Dec 14 21:00:00 2004
         - cleanup, driver classes now just define _tables() and
           _db_class() (Simon Flack)

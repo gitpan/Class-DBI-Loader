@@ -8,7 +8,7 @@ require Class::DBI::Loader::Generic;
 use base qw(Class::DBI::Loader::Generic);
 use vars qw($VERSION);
 
-$VERSION = '0.06';
+$VERSION = '0.07';
 
 =head1 NAME
 

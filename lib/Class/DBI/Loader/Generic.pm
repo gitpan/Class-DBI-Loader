@@ -5,7 +5,7 @@ use vars qw($VERSION);
 use Carp;
 use Lingua::EN::Inflect;
 
-$VERSION = '0.10';
+$VERSION = '0.11';
 
 =head1 NAME
 
@@ -48,6 +48,10 @@ Namespace under which your table classes will be initialized.
 =head3 password
 
 Password.
+
+=head3 relationships
+
+Try to automatically detect/setup has_a and has_many relationships.
 
 =head3 user
 

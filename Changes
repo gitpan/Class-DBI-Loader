@@ -1,5 +1,8 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.11  Mon Dec 20 20:00:00 2004
+        - support for SQLite2 (Marcus Ramberg)
+
 0.10  Wed Dec 15 01:00:00 2004
         - support for automatic has_a and has_many relationships,
           big thanks to Randal Schwartz for his article about this!

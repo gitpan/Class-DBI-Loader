@@ -3,7 +3,7 @@ package Class::DBI::Loader;
 use strict;
 use vars '$VERSION';
 
-$VERSION = '0.10';
+$VERSION = '0.11';
 
 =head1 NAME
 
@@ -71,6 +71,7 @@ sub new {
     my ( $class, %args ) = @_;
     my $dsn = $args{dsn};
     my ($driver) = $dsn =~ m/^dbi:(\w*?)(?:\((.*?)\))?:/i;
+    $driver = 'SQLite' if $driver eq 'SQLite2';
     my $impl = "Class::DBI::Loader::" . $driver;
     eval qq/use $impl/;
     return $impl->new(%args);

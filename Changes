@@ -1,5 +1,8 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.15  Sat Feb 19 20:00:00 2005
+        - fixed DBD::Pg 1.39_02 compatibility (chocolateboy)
+
 0.14  Fri Feb 04 18:00:00 2005
         - bugfixes
 

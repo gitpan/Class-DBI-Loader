@@ -8,7 +8,7 @@ use Carp;
 require Class::DBI::mysql;
 require Class::DBI::Loader::Generic;
 
-$VERSION = '0.15';
+$VERSION = '0.16';
 
 =head1 NAME
 
@@ -75,6 +75,7 @@ sub _tables {
         push @tables, $1
           if $table =~ /\A(\w+)\z/;
     }
+    $dbh->disconnect;
     return @tables;
 }
 

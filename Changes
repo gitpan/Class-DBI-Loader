@@ -1,5 +1,9 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.12  Thu Jan 27 07:00:00 2004
+        - automatic relationships for SQLite
+        - automatic relationships for MySQL (Adam Anderson)
+
 0.11  Mon Dec 20 20:00:00 2004
         - support for SQLite2 (Marcus Ramberg)
 

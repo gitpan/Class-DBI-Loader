@@ -4,6 +4,9 @@ use Test::More tests => 6;
 use Class::DBI::Loader;
 use DBI;
 
+eval { require DBD::SQLite };
+my $class = $@ ? 'SQLite2' : 'SQLite';
+
 my $dbh;
 SKIP: {
 
@@ -12,7 +15,7 @@ SKIP: {
 
     my $database = './t/sqlite_test';
 
-    my $dsn = "dbi:SQLite:dbname=$database";
+    my $dsn = "dbi:$class:dbname=$database";
     $dbh = DBI->connect(
         $dsn, "", "",
         {

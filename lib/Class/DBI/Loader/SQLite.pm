@@ -8,7 +8,7 @@ use Carp;
 require Class::DBI::SQLite;
 require Class::DBI::Loader::Generic;
 
-$VERSION = '0.11';
+$VERSION = '0.12';
 
 =head1 NAME
 
@@ -33,6 +33,33 @@ See L<Class::DBI::Loader>, L<Class::DBI::Loader::Generic>.
 =cut
 
 sub _db_class { return 'Class::DBI::SQLite' }
+
+sub _relationships {
+    my $self = shift;
+    foreach my $table ( $self->tables ) {
+        my $dbh = $self->find_class($table)->db_Main;
+        my $sth = $dbh->prepare(<<"");
+SELECT sql FROM sqlite_master WHERE tbl_name = ?
+
+        $sth->execute($table);
+        my ($sql) = $sth->fetchrow_array;
+        $sth->finish;
+
+        # Cut "CREATE TABLE ( )" blabla...
+        $sql =~ /^[\w\s]+\((.*)\)$/si;
+        my $cols = $1;
+
+        # Split column definitions
+        for my $col ( split /\,/, $cols ) {
+            $col =~ s/^\s+//gs;
+
+            # Grab reference
+            if ( $col =~ /^(\w+).*REFERENCES\s+(\w+)/i ) {
+                $self->_has_a_many( $table, $1, $2 );
+            }
+        }
+    }
+}
 
 sub _tables {
     my $self = shift;

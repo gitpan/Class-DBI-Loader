@@ -49,12 +49,15 @@ DESCRIPTION
     Class::DBI::Loader supports MySQL, Postgres and SQLite.
 
 AUTHOR
-    IKEBE Tomohiro <ikebe@edge.co.jp>
+    Sebastian Riedel, "sri@oook.de"
 
+AUTHOR EMERITUS
+    IKEBE Tomohiro, "ikebe@edge.co.jp"
+
+LICENSE
     This library is free software; you can redistribute it and/or modify it
     under the same terms as Perl itself.
 
 SEE ALSO
-    the Class::DBI manpage the Class::DBI::mysql manpage the Class::DBI::Pg
-    manpage the Class::DBI::SQLite manpage
+    Class::DBI, Class::DBI::mysql, Class::DBI::Pg, Class::DBI::SQLite
 

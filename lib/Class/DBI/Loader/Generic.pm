@@ -6,7 +6,7 @@ use Carp ();
 require Class::Accessor;
 use base qw(Class::Accessor);
 
-$VERSION = '0.04';
+$VERSION = '0.05';
 
 __PACKAGE__->mk_accessors(qw(_datasource _namespace));
 

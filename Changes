@@ -1,5 +1,8 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.05  Sat Nov 13 19:30:00 2004
+        - more cleanup
+
 0.04  Sat Nov 13 19:00:00 2004
         - cleanup
 

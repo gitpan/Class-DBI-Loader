@@ -8,7 +8,7 @@ use Carp;
 require Class::DBI::mysql;
 require Class::DBI::Loader::Generic;
 
-$VERSION = '0.17';
+$VERSION = '0.18';
 
 =head1 NAME
 
@@ -56,12 +56,13 @@ sub _relationships {
         my $sth   = $dbh->prepare($query)
           or die("Cannot get table status: $table");
         $sth->execute;
-        ( my $comment = $sth->fetchrow_hashref->{comment} ) =~ s/$quoter//g;
-        $sth->finish;
+        my $comment = $sth->fetchrow_hashref->{comment};
+        $comment =~ s/$quoter//g if ($quoter);
         while ( $comment =~ m!\((\w+)\)\sREFER\s\w+/(\w+)\(\w+\)!g ) {
             eval { $self->_has_a_many( $table, $1, $2 ) };
             warn qq/has_a_many failed "$@"/ if $@ && $self->debug;
         }
+        $sth->finish;
     }
 }
 
@@ -71,7 +72,7 @@ sub _tables {
     my @tables;
     foreach my $table ( $dbh->tables ) {
         my $quoter = $dbh->get_info(29);
-        $table =~ s/$quoter//g;
+        $table =~ s/$quoter//g if ($quoter);
         push @tables, $1
           if $table =~ /\A(\w+)\z/;
     }

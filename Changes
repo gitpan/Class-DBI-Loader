@@ -1,5 +1,9 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.18  Fri Apr 08 18:00:00 2005
+        - added pod tests for kwalitee
+        - fixed that annoying mysql quoter bug (Andy Grundman)
+
 0.17  Sat Feb 12 01:00:00 2005
         - exclude support (David Naughton)
 

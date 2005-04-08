@@ -5,7 +5,7 @@ use vars qw($VERSION);
 use Carp;
 use Lingua::EN::Inflect;
 
-$VERSION = '0.17';
+$VERSION = '0.18';
 
 =head1 NAME
 

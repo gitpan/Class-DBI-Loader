@@ -8,7 +8,7 @@ use Carp;
 require Class::DBI::mysql;
 require Class::DBI::Loader::Generic;
 
-$VERSION = '0.18';
+$VERSION = '0.19';
 
 =head1 NAME
 

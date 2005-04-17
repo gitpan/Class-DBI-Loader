@@ -7,6 +7,7 @@ WriteMakefile(
         Test::More          => 0.32,
         Class::DBI          => 0.89,
         DBI                 => 1.30,
-        Lingua::EN::Inflect => 0
+        Lingua::EN::Inflect => 0,
+        Text::Balanced      => 0
     },
 );

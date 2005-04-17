@@ -3,12 +3,13 @@ package Class::DBI::Loader::SQLite;
 use strict;
 use base 'Class::DBI::Loader::Generic';
 use vars '$VERSION';
+use Text::Balanced qw( extract_bracketed );
 use DBI;
 use Carp;
 require Class::DBI::SQLite;
 require Class::DBI::Loader::Generic;
 
-$VERSION = '0.18';
+$VERSION = '0.19';
 
 =head1 NAME
 
@@ -28,6 +29,9 @@ Class::DBI::Loader::SQLite - Class::DBI::Loader SQLite Implementation.
 
 =head1 DESCRIPTION
 
+Multi-column primary keys are supported. It's also fine to define multi-column
+foreign keys, but they will be ignored because L<Class::DBI> does not support them.
+
 See L<Class::DBI::Loader>, L<Class::DBI::Loader::Generic>.
 
 =cut
@@ -37,6 +41,7 @@ sub _db_class { return 'Class::DBI::SQLite' }
 sub _relationships {
     my $self = shift;
     foreach my $table ( $self->tables ) {
+
         my $dbh = $self->find_class($table)->db_Main;
         my $sth = $dbh->prepare(<<"");
 SELECT sql FROM sqlite_master WHERE tbl_name = ?
@@ -48,13 +53,32 @@ SELECT sql FROM sqlite_master WHERE tbl_name = ?
         # Cut "CREATE TABLE ( )" blabla...
         $sql =~ /^[\w\s]+\((.*)\)$/si;
         my $cols = $1;
+        # strip single-line comments
+        $cols =~ s/\-\-.*\n/\n/g;
+
+        # temporarily replace any commas inside parens,
+        # so we don't incorrectly split on them below
+        my $cols_no_bracketed_commas = $cols;
+        while ( my $extracted = (extract_bracketed($cols,"()","[^(]*"))[0] ) {
+            my $replacement = $extracted;
+            $replacement =~ s/,/--comma--/g;
+            $replacement =~ s/^\(//;
+            $replacement =~ s/\)$//;
+            $cols_no_bracketed_commas =~ s/$extracted/$replacement/m;
+        }
 
         # Split column definitions
-        for my $col ( split /\,/, $cols ) {
+        for my $col ( split /,/, $cols_no_bracketed_commas ) {
+            # put the paren-bracketed commas back, to help
+            # find multi-col fks below
+            $col =~ s/\-\-comma\-\-/,/g;
+            # CDBI doesn't have built-in support multi-col fks, so ignore them
+            next if $col =~ s/^\s*FOREIGN\s+KEY\s*//i && $col =~ /^\([^,)]+,/;
             $col =~ s/^\s+//gs;
 
             # Grab reference
             if ( $col =~ /^(\w+).*REFERENCES\s+(\w+)/i ) {
+                warn qq/Found foreign key definition "$col"/ if $self->debug;
                 eval { $self->_has_a_many( $table, $1, $2 ) };
                 warn qq/has_a_many failed "$@"/ if $@ && $self->debug;
             }

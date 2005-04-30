@@ -3,7 +3,7 @@ package Class::DBI::Loader;
 use strict;
 use vars '$VERSION';
 
-$VERSION = '0.19';
+$VERSION = '0.20';
 
 =head1 NAME
 
@@ -14,6 +14,7 @@ Class::DBI::Loader - Dynamic definition of Class::DBI sub classes.
   use Class::DBI::Loader;
 
   my $loader = Class::DBI::Loader->new(
+    debug                   => 1,
     dsn                     => "dbi:mysql:dbname",
     user                    => "root",
     password                => "",
@@ -74,6 +75,7 @@ sub new {
     $driver = 'SQLite' if $driver eq 'SQLite2';
     my $impl = "Class::DBI::Loader::" . $driver;
     eval qq/use $impl/;
+    die qq/Couldn't require loader class "$impl", "$@"/ if $@;
     return $impl->new(%args);
 }
 

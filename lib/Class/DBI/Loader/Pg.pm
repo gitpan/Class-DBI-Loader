@@ -8,7 +8,7 @@ use Carp;
 require Class::DBI::Pg;
 require Class::DBI::Loader::Generic;
 
-$VERSION = '0.19';
+$VERSION = '0.20';
 
 =head1 NAME
 

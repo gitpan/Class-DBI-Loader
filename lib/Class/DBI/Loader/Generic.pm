@@ -5,7 +5,7 @@ use vars qw($VERSION);
 use Carp;
 use Lingua::EN::Inflect;
 
-$VERSION = '0.20';
+$VERSION = '0.21';
 
 =head1 NAME
 
@@ -24,6 +24,11 @@ Available constructor options are:
 =head3 additional_base_classes
 
 List of additional base classes your table classes will use.
+
+=head3 left_base_classes
+
+List of additional base classes, that need to be leftmost, for
+example L<Class::DBI::Sweet> (former L<Catalyst::Model::CDBI::Sweet>).
 
 =head3 additional_classes
 
@@ -57,6 +62,11 @@ Password.
 
 Try to automatically detect/setup has_a and has_many relationships.
 
+=head3 inflect
+
+An hashref, which contains exceptions to Lingua::EN::Inflect::PL().
+Useful for foreign language column names.
+
 =head3 user
 
 Username.
@@ -78,15 +88,19 @@ sub new {
     my $additional_base = $args{additional_base_classes} || [];
     $additional_base = [$additional_base]
       unless ref $additional_base eq 'ARRAY';
+    my $left_base = $args{left_base_classes} || [];
+    $left_base = [$left_base] unless ref $left_base eq 'ARRAY';
     my $self = bless {
         _datasource =>
           [ $args{dsn}, $args{user}, $args{password}, $args{options} ],
         _namespace       => $args{namespace},
         _additional      => $additional,
         _additional_base => $additional_base,
+        _left_base       => $left_base,
         _constraint      => $args{constraint} || '.*',
         _exclude         => $args{exclude},
         _relationships   => $args{relationships},
+        _inflect         => $args{inflect},
         CLASSES          => {},
     }, $class;
     $self->_load_classes;
@@ -154,6 +168,8 @@ sub _has_a_many {
     $table_class->has_a( $column => $other_class );
     my ($table_class_base) = $table_class =~ /.*::(.+)/;
     my $plural = Lingua::EN::Inflect::PL( lc $table_class_base );
+    $plural = $self->{_inflect}->{lc $table_class_base}
+      if $self->{_inflect} and exists $self->{_inflect}->{lc $table_class_base};
     warn qq/Has_many relationship "$other_class", "$plural" -> "$table_class"/
       if $self->debug;
     $other_class->has_many( $plural => $table_class );
@@ -167,6 +183,7 @@ sub _load_classes {
     my $additional      = join '', map "use $_;", @{ $self->{_additional} };
     my $additional_base = join '', map "use base '$_';",
       @{ $self->{_additional_base} };
+    my $left_base       = join '', map "use $_;", @{ $self->{_left_base} };
     my $constraint = $self->{_constraint};
     my $exclude = $self->{_exclude};
     foreach my $table (@tables) {
@@ -180,10 +197,11 @@ sub _load_classes {
         $class->set_db( Main => @{ $self->{_datasource} } );
         $class->set_up_table($table);
         $self->{CLASSES}->{$table} = $class;
-        my $code = "package $class;$additional_base$additional";
+        my $code = "package $class;$additional_base$additional$left_base";
         warn qq/Additional classes are "$code"/ if $self->debug;
         eval $code;
         croak qq/Couldn't load additional classes "$@"/ if $@;
+        unshift @{"$class\::ISA"}, $_ foreach (@{ $self->{_left_base} });
     }
 }
 

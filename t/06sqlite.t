@@ -64,14 +64,14 @@ for my $dat (qw(aaa bbb ccc ddd)) {
 
 $dbh->do(<<'SQL');
 CREATE TABLE loader_test3 (
-    id INTEGER,
+    id1 INTEGER,
     id2 INTEGER, --, id2 INTEGER REFERENCES loader_test1,
     dat TEXT,
-    PRIMARY KEY (id,id2)
+    PRIMARY KEY (id1,id2)
 )
 SQL
 
-$dbh->do("INSERT INTO loader_test3 (id,id2,dat) VALUES (1,1,'aaa')");
+$dbh->do("INSERT INTO loader_test3 (id1,id2,dat) VALUES (1,1,'aaa')");
 
 $dbh->do(<<'SQL');
 CREATE TABLE loader_test4 (
@@ -79,7 +79,7 @@ CREATE TABLE loader_test4 (
     id2 INTEGER,
     loader_test2 INTEGER REFERENCES loader_test2,
     dat TEXT,
-    FOREIGN KEY (id, id2 ) REFERENCES loader_test3 (id,id2)
+    FOREIGN KEY (id, id2 ) REFERENCES loader_test3 (id1,id2)
 )
 SQL
 
@@ -105,7 +105,7 @@ is( $class2->retrieve_all, 4 );
 my ($obj2) = $class2->search( dat => 'bbb' );
 is( $obj2->id, 2 );
 my $class3 = $loader->find_class("loader_test3");
-my $obj3 = $class3->retrieve( id => 1, id2 => 1 );
+my $obj3 = $class3->retrieve( id1 => 1, id2 => 1 );
 is( ref($obj3->id2), '' );   # fk def in comments should not be parsed
 my $class4 = $loader->find_class("loader_test4");
 my $obj4 = $class4->retrieve(1);

@@ -5,7 +5,7 @@ use vars qw($VERSION);
 use Carp;
 use Lingua::EN::Inflect;
 
-$VERSION = '0.21';
+$VERSION = '0.22';
 
 =head1 NAME
 
@@ -70,8 +70,6 @@ Useful for foreign language column names.
 =head3 user
 
 Username.
-
-=head
 
 =head2 METHODS
 

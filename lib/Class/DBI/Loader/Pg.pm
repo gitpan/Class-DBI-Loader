@@ -8,7 +8,7 @@ use Carp;
 require Class::DBI::Pg;
 require Class::DBI::Loader::Generic;
 
-$VERSION = '0.22';
+$VERSION = '0.25';
 
 =head1 NAME
 
@@ -39,12 +39,12 @@ sub _db_class { return 'Class::DBI::Pg' }
 sub _tables {
     my $self = shift;
     my $dbh = DBI->connect( @{ $self->{_datasource} } ) or croak($DBI::errstr);
-    my @tables;
-    if ( $DBD::Pg::VERSION >= 1.31 ) {
-        return $dbh->tables( undef, "public", "", "table",
-            { noprefix => 1, pg_noprefix => 1 } );
-    }
-    else { return $dbh->tables }
+    my @tables = ( $DBD::Pg::VERSION >= 1.31 ) ?
+        $dbh->tables( undef, "public", "", "table",
+            { noprefix => 1, pg_noprefix => 1 } ) :
+        $dbh->tables;
+    $dbh->disconnect;
+    return @tables;
 }
 
 =head1 SEE ALSO

@@ -5,7 +5,7 @@ use vars qw($VERSION);
 use Carp;
 use Lingua::EN::Inflect;
 
-$VERSION = '0.22';
+$VERSION = '0.25';
 
 =head1 NAME
 
@@ -101,8 +101,10 @@ sub new {
         _inflect         => $args{inflect},
         CLASSES          => {},
     }, $class;
+    warn qq/\### START Class::DBI::Loader dump ###\n/ if $self->debug;
     $self->_load_classes;
-    $self->_relationships if $self->{_relationships};
+    $self->_relationships                           if $self->{_relationships};
+    warn qq/\### END Class::DBI::Loader dump ###\n/ if $self->debug;
     $self;
 }
 
@@ -161,14 +163,17 @@ sub _has_a_many {
     my ( $self, $table, $column, $other ) = @_;
     my $table_class = $self->find_class($table);
     my $other_class = $self->find_class($other);
-    warn qq/Has_a relationship "$table_class", "$column" -> "$other_class"/
+    warn qq/\# Has_a relationship\n/ if $self->debug;
+    warn qq/$table_class->has_a( '$column' => '$other_class' );\n\n/
       if $self->debug;
     $table_class->has_a( $column => $other_class );
     my ($table_class_base) = $table_class =~ /.*::(.+)/;
     my $plural = Lingua::EN::Inflect::PL( lc $table_class_base );
-    $plural = $self->{_inflect}->{lc $table_class_base}
-      if $self->{_inflect} and exists $self->{_inflect}->{lc $table_class_base};
-    warn qq/Has_many relationship "$other_class", "$plural" -> "$table_class"/
+    $plural = $self->{_inflect}->{ lc $table_class_base }
+      if $self->{_inflect}
+      and exists $self->{_inflect}->{ lc $table_class_base };
+    warn qq/\# Has_many relationship\n/ if $self->debug;
+    warn qq/$other_class->has_many( '$plural' => '$table_class' );\n\n/
       if $self->debug;
     $other_class->has_many( $plural => $table_class );
 }
@@ -178,28 +183,29 @@ sub _load_classes {
     my $self            = shift;
     my @tables          = $self->_tables();
     my $db_class        = $self->_db_class();
-    my $additional      = join '', map "use $_;", @{ $self->{_additional} };
-    my $additional_base = join '', map "use base '$_';",
+    my $additional      = join '', map "use $_;\n", @{ $self->{_additional} };
+    my $additional_base = join '', map "use base '$_';\n",
       @{ $self->{_additional_base} };
-    my $left_base       = join '', map "use $_;", @{ $self->{_left_base} };
+    my $left_base  = join '', map "use base '$_';\n", @{ $self->{_left_base} };
     my $constraint = $self->{_constraint};
-    my $exclude = $self->{_exclude};
+    my $exclude    = $self->{_exclude};
+
     foreach my $table (@tables) {
         next unless $table =~ /$constraint/;
-        next if (defined $exclude && $table =~ /$exclude/);
-        warn qq/Found table "$table"/ if $self->debug;
+        next if ( defined $exclude && $table =~ /$exclude/ );
         my $class = $self->_table2class($table);
-        warn qq/Initializing "$class"/ if $self->debug;
+        warn qq/\# Initializing table "$table" as "$class"\n/ if $self->debug;
         no strict 'refs';
         @{"$class\::ISA"} = $db_class;
         $class->set_db( Main => @{ $self->{_datasource} } );
         $class->set_up_table($table);
         $self->{CLASSES}->{$table} = $class;
-        my $code = "package $class;$additional_base$additional$left_base";
-        warn qq/Additional classes are "$code"/ if $self->debug;
+        my $code = "package $class;\n$additional_base$additional$left_base";
+        warn qq/$code/  if $self->debug;
+        warn qq/$class->table('$table');\n\n/ if $self->debug;
         eval $code;
         croak qq/Couldn't load additional classes "$@"/ if $@;
-        unshift @{"$class\::ISA"}, $_ foreach (@{ $self->{_left_base} });
+        unshift @{"$class\::ISA"}, $_ foreach ( @{ $self->{_left_base} } );
     }
 }
 
@@ -213,7 +219,7 @@ sub _relationships {
                 my $column = $res->{FK_COLUMN_NAME};
                 my $other  = $res->{UK_TABLE_NAME};
                 eval { $self->_has_a_many( $table, $column, $other ) };
-                warn qq/has_a_many failed "$@"/ if $@ && $self->debug;
+                warn qq/\# has_a_many failed "$@"\n\n/ if $@ && $self->debug;
             }
         }
     }

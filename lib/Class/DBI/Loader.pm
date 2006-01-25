@@ -3,7 +3,7 @@ package Class::DBI::Loader;
 use strict;
 use vars '$VERSION';
 
-$VERSION = '0.22';
+$VERSION = '0.25';
 
 =head1 NAME
 
@@ -23,6 +23,7 @@ Class::DBI::Loader - Dynamic definition of Class::DBI sub classes.
     left_base_classes       => qw/Class::DBI::Sweet/,
     constraint              => '^foo.*',
     relationships           => 1,
+    options                 => { AutoCommit => 1 }, 
     inflect                 => { child => 'children' }
   );
   my $class = $loader->find_class('film'); # $class => Data::Film
@@ -82,16 +83,17 @@ sub new {
 
 =head1 AUTHOR
 
-Sebastian Riedel, C<sri@oook.de>
+Daisuke Maki C<dmaki@cpan.org>
 
 =head1 AUTHOR EMERITUS
 
+Sebastian Riedel, C<sri@oook.de>
 IKEBE Tomohiro, C<ikebe@edge.co.jp>
 
 =head1 THANK YOU
 
-Adam Anderson, Andy Grundman, Dan Kubb, David Naughton, Randal Schwartz,
-Simon Flack and all the others who've helped.
+Adam Anderson, Andy Grundman, Autrijus Tang, Dan Kubb, David Naughton,
+Randal Schwartz, Simon Flack and all the others who've helped.
 
 =head1 LICENSE
 

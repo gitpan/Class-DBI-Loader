@@ -1,5 +1,17 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.25  Thu Jan 26 02:14:00 2006
+        - Pg: disconnect from database after getting the list of tables
+        - Maintainer changed to Daisuke Maki.
+
+0.24  Tue XXX XX 00:00:00 2005
+        - Strip punctuations around key and table names for SQLite
+          (Autrijus Tang)
+
+0.23  Tue Jun 14 01:00:00 2005
+        - fixed mysql loader, escape with backticks (Andy Grundman)
+        - debug output is now usable code!!!
+
 0.22  Thu Jun 11 23:00:00 2005
         - fixed pod
         - second try for a sane release

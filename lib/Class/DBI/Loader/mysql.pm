@@ -8,7 +8,7 @@ use Carp;
 require Class::DBI::mysql;
 require Class::DBI::Loader::Generic;
 
-$VERSION = '0.22';
+$VERSION = '0.25';
 
 =head1 NAME
 
@@ -58,9 +58,9 @@ sub _relationships {
         $sth->execute;
         my $comment = $sth->fetchrow_hashref->{comment};
         $comment =~ s/$quoter//g if ($quoter);
-        while ( $comment =~ m!\((\w+)\)\sREFER\s\w+/(\w+)\(\w+\)!g ) {
+        while ( $comment =~ m!\(`?(\w+)`?\)\sREFER\s`?\w+/(\w+)`?\(`?\w+`?\)!g ) {
             eval { $self->_has_a_many( $table, $1, $2 ) };
-            warn qq/has_a_many failed "$@"/ if $@ && $self->debug;
+            warn qq/\# has_a_many failed "$@"\n\n/ if $@ && $self->debug;
         }
         $sth->finish;
     }

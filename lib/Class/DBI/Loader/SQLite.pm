@@ -9,7 +9,7 @@ use Carp;
 require Class::DBI::SQLite;
 require Class::DBI::Loader::Generic;
 
-$VERSION = '0.22';
+$VERSION = '0.25';
 
 =head1 NAME
 
@@ -53,34 +53,44 @@ SELECT sql FROM sqlite_master WHERE tbl_name = ?
         # Cut "CREATE TABLE ( )" blabla...
         $sql =~ /^[\w\s]+\((.*)\)$/si;
         my $cols = $1;
+
         # strip single-line comments
         $cols =~ s/\-\-.*\n/\n/g;
 
         # temporarily replace any commas inside parens,
         # so we don't incorrectly split on them below
         my $cols_no_bracketed_commas = $cols;
-        while ( my $extracted = (extract_bracketed($cols,"()","[^(]*"))[0] ) {
+        while ( my $extracted =
+            ( extract_bracketed( $cols, "()", "[^(]*" ) )[0] )
+        {
             my $replacement = $extracted;
-            $replacement =~ s/,/--comma--/g;
-            $replacement =~ s/^\(//;
-            $replacement =~ s/\)$//;
+            $replacement              =~ s/,/--comma--/g;
+            $replacement              =~ s/^\(//;
+            $replacement              =~ s/\)$//;
             $cols_no_bracketed_commas =~ s/$extracted/$replacement/m;
         }
 
         # Split column definitions
         for my $col ( split /,/, $cols_no_bracketed_commas ) {
+
             # put the paren-bracketed commas back, to help
             # find multi-col fks below
             $col =~ s/\-\-comma\-\-/,/g;
+
             # CDBI doesn't have built-in support multi-col fks, so ignore them
             next if $col =~ s/^\s*FOREIGN\s+KEY\s*//i && $col =~ /^\([^,)]+,/;
+
+            # Strip punctuations around key and table names
+            $col =~ s/[()\[\]'"]/ /g;
             $col =~ s/^\s+//gs;
 
             # Grab reference
             if ( $col =~ /^(\w+).*REFERENCES\s+(\w+)/i ) {
-                warn qq/Found foreign key definition "$col"/ if $self->debug;
+                chomp $col;
+                warn qq/\# Found foreign key definition "$col"\n\n/
+                  if $self->debug;
                 eval { $self->_has_a_many( $table, $1, $2 ) };
-                warn qq/has_a_many failed "$@"/ if $@ && $self->debug;
+                warn qq/\# has_a_many failed "$@"\n\n/ if $@ && $self->debug;
             }
         }
     }

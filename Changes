@@ -1,5 +1,14 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.26  Thu Jan 26 11:26:00 2006
+        - Changes that went into 0.25 didn't fix the problems described in
+          dbdpg-general mailing lists.
+
+            http://gborg.postgresql.org/pipermail/dbdpg-general/2006-January/001954.html
+
+          Toby Corkindale gave me the tests to properly test the problem, and
+          I was able to verify it.
+
 0.25  Thu Jan 26 02:14:00 2006
         - Pg: disconnect from database after getting the list of tables
         - Maintainer changed to Daisuke Maki.

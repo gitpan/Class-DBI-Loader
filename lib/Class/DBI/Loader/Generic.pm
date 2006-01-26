@@ -5,7 +5,7 @@ use vars qw($VERSION);
 use Carp;
 use Lingua::EN::Inflect;
 
-$VERSION = '0.25';
+$VERSION = '0.26';
 
 =head1 NAME
 
@@ -105,6 +105,11 @@ sub new {
     $self->_load_classes;
     $self->_relationships                           if $self->{_relationships};
     warn qq/\### END Class::DBI::Loader dump ###\n/ if $self->debug;
+
+    foreach my $table ($self->tables) {
+        $self->find_class($table)->db_Main->disconnect;
+    }
+
     $self;
 }
 

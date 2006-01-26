@@ -3,7 +3,7 @@ package Class::DBI::Loader;
 use strict;
 use vars '$VERSION';
 
-$VERSION = '0.25';
+$VERSION = '0.26';
 
 =head1 NAME
 

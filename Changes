@@ -1,5 +1,8 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.28  Sat Jan 28 08:45:00 2006
+        - Forgot to update MANIFEST, which lead to failing tests. 
+
 0.27  Fri Jan 27 11:43:00 2006
         - Inline use base () calls when generating classes.
         - Use connection() over set_db(), if available.

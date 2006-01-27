@@ -1,4 +1,5 @@
 use strict;
+use lib("t/lib");
 use Test::More;
 
 BEGIN {
@@ -10,7 +11,7 @@ BEGIN {
     eval $use_statements;
     plan skip_all => $skip_message if $@;
 
-    plan tests => 11;
+    plan tests => 14;
 }
 
 use Class::DBI::Loader;
@@ -91,15 +92,25 @@ my $loader = Class::DBI::Loader->new
      namespace     => 'SQLiteTest',
      constraint    => '^loader_test.*',
      relationships => 1,
+     additional_base_classes => 'LoaderBase',
+     left_base_classes => 'LoaderLeft'
     );
 is( $loader->find_class("loader_test1"), "SQLiteTest::LoaderTest1" );
 is( $loader->find_class("loader_test2"), "SQLiteTest::LoaderTest2" );
 is( $loader->find_class("loader_test3"), "SQLiteTest::LoaderTest3" );
 is( $loader->find_class("loader_test4"), "SQLiteTest::LoaderTest4" );
 my $class1 = $loader->find_class("loader_test1");
+{
+    no strict 'refs';
+    is(${"${class1}::ISA"}[0], 'LoaderLeft');
+}
+
 my $obj    = $class1->retrieve(1);
 is( $obj->id,  1 );
 is( $obj->dat, "foo" );
+isa_ok($obj, 'LoaderBase');
+isa_ok($obj, 'LoaderLeft');
+
 my $class2 = $loader->find_class("loader_test2");
 is( $class2->retrieve_all, 4 );
 my ($obj2) = $class2->search( dat => 'bbb' );

@@ -1,6 +1,6 @@
 use strict;
-use Test::More tests => 6;
-
+use Test::More tests => 9;
+use lib("t/lib");
 use Class::DBI::Loader;
 use DBI;
 
@@ -12,11 +12,11 @@ my $password = $ENV{PG_PASS};
 SKIP: {
 
     eval { require Class::DBI::Pg; };
-    skip "Class::DBI::Pg is not installed", 6 if $@;
+    skip "Class::DBI::Pg is not installed", 9 if $@;
 
     skip
       'You need to set the PG_NAME, PG_USER and PG_PASS environment variables',
-      6
+      9
       unless ( $database && $user );
 
     my $dsn = "dbi:Pg:dbname=$database";
@@ -65,14 +65,25 @@ SQL
         user       => $user,
         password   => $password,
         namespace  => 'PgTest',
-        constraint => '^loader_test.*'
+        constraint => '^loader_test.*',
+        additional_base_classes => [ qw(LoaderBase) ],
+        left_base_classes => [ qw(LoaderLeft) ]
     );
     is( $loader->find_class("loader_test1"), "PgTest::LoaderTest1" );
     is( $loader->find_class("loader_test2"), "PgTest::LoaderTest2" );
     my $class1 = $loader->find_class("loader_test1");
+
+    {
+        no strict 'refs';
+        is(${"${class1}::ISA"}[0], 'LoaderLeft');
+    }
+
     my $obj    = $class1->retrieve(1);
     is( $obj->id,  1 );
     is( $obj->dat, "foo" );
+    isa_ok($obj, 'LoaderBase');
+    isa_ok($obj, 'LoaderLeft');
+
     my $class2 = $loader->find_class("loader_test2");
     is( $class2->retrieve_all, 4 );
     my ($obj2) = $class2->search( dat => 'bbb' );

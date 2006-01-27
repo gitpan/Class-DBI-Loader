@@ -5,7 +5,7 @@ use vars qw($VERSION);
 use Carp;
 use Lingua::EN::Inflect;
 
-$VERSION = '0.26';
+$VERSION = '0.27';
 
 =head1 NAME
 
@@ -17,61 +17,11 @@ See L<Class::DBI::Loader>
 
 =head1 DESCRIPTION
 
-=head2 OPTIONS
+=head1 METHODS
 
-Available constructor options are:
+=head2 new %args
 
-=head3 additional_base_classes
-
-List of additional base classes your table classes will use.
-
-=head3 left_base_classes
-
-List of additional base classes, that need to be leftmost, for
-example L<Class::DBI::Sweet> (former L<Catalyst::Model::CDBI::Sweet>).
-
-=head3 additional_classes
-
-List of additional classes which your table classes will use.
-
-=head3 constraint
-
-Only load tables matching regex.
-
-=head3 exclude
-
-Exclude tables matching regex.
-
-=head3 debug
-
-Enable debug messages.
-
-=head3 dsn
-
-DBI Data Source Name.
-
-=head3 namespace
-
-Namespace under which your table classes will be initialized.
-
-=head3 password
-
-Password.
-
-=head3 relationships
-
-Try to automatically detect/setup has_a and has_many relationships.
-
-=head3 inflect
-
-An hashref, which contains exceptions to Lingua::EN::Inflect::PL().
-Useful for foreign language column names.
-
-=head3 user
-
-Username.
-
-=head2 METHODS
+See the documentation for C<Class::DBI::Loader-E<gt>new()>
 
 =cut
 
@@ -106,6 +56,7 @@ sub new {
     $self->_relationships                           if $self->{_relationships};
     warn qq/\### END Class::DBI::Loader dump ###\n/ if $self->debug;
 
+    # disconnect to avoid confusion.
     foreach my $table ($self->tables) {
         $self->find_class($table)->db_Main->disconnect;
     }
@@ -189,12 +140,13 @@ sub _load_classes {
     my @tables          = $self->_tables();
     my $db_class        = $self->_db_class();
     my $additional      = join '', map "use $_;\n", @{ $self->{_additional} };
-    my $additional_base = join '', map "use base '$_';\n",
-      @{ $self->{_additional_base} };
-    my $left_base  = join '', map "use base '$_';\n", @{ $self->{_left_base} };
+    my $additional_base = 
+        sprintf("use base qw(%s)\n", join(' ', 
+            (@{ $self->{_left_base} }, @{ $self->{_additional_base} })));
     my $constraint = $self->{_constraint};
     my $exclude    = $self->{_exclude};
 
+    my $use_connection = $Class::DBI::VERSION >= 0.96;
     foreach my $table (@tables) {
         next unless $table =~ /$constraint/;
         next if ( defined $exclude && $table =~ /$exclude/ );
@@ -202,10 +154,15 @@ sub _load_classes {
         warn qq/\# Initializing table "$table" as "$class"\n/ if $self->debug;
         no strict 'refs';
         @{"$class\::ISA"} = $db_class;
-        $class->set_db( Main => @{ $self->{_datasource} } );
+
+        if ($use_connection) {
+            $class->connection(@{$self->{_datasource}});
+        } else {
+            $class->set_db( Main => @{ $self->{_datasource} } );
+        }
         $class->set_up_table($table);
         $self->{CLASSES}->{$table} = $class;
-        my $code = "package $class;\n$additional_base$additional$left_base";
+        my $code = "package $class;\n$additional_base$additional";
         warn qq/$code/  if $self->debug;
         warn qq/$class->table('$table');\n\n/ if $self->debug;
         eval $code;

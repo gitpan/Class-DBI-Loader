@@ -1,5 +1,11 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.27  Fri Jan 27 11:43:00 2006
+        - Inline use base () calls when generating classes.
+        - Use connection() over set_db(), if available.
+        - Test for additional_base_classes and left_base_classes
+        - Shut up t/03podcoverage.t failure. Reporeted by Kenichi Ishigaki
+
 0.26  Thu Jan 26 11:26:00 2006
         - Changes that went into 0.25 didn't fix the problems described in
           dbdpg-general mailing lists.

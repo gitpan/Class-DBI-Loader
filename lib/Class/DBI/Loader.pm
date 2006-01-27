@@ -3,7 +3,7 @@ package Class::DBI::Loader;
 use strict;
 use vars '$VERSION';
 
-$VERSION = '0.26';
+$VERSION = '0.27';
 
 =head1 NAME
 
@@ -18,9 +18,9 @@ Class::DBI::Loader - Dynamic definition of Class::DBI sub classes.
     user                    => "root",
     password                => "",
     namespace               => "Data",
-    additional_classes      => qw/Class::DBI::AbstractSearch/,
-    additional_base_classes => qw/My::Stuff/,
-    left_base_classes       => qw/Class::DBI::Sweet/,
+    additional_classes      => qw/Class::DBI::AbstractSearch/, # or arrayref
+    additional_base_classes => qw/My::Stuff/, # or arrayref
+    left_base_classes       => qw/Class::DBI::Sweet/, # or arrayref
     constraint              => '^foo.*',
     relationships           => 1,
     options                 => { AutoCommit => 1 }, 
@@ -80,6 +80,64 @@ sub new {
     die qq/Couldn't require loader class "$impl", "$@"/ if $@;
     return $impl->new(%args);
 }
+
+=head1 METHODS
+
+=head2 new %args
+
+=over 4
+
+=item additional_base_classes
+
+List of additional base classes your table classes will use.
+
+=item left_base_classes
+
+List of additional base classes, that need to be leftmost, for
+example L<Class::DBI::Sweet> (former L<Catalyst::Model::CDBI::Sweet>).
+
+=item additional_classes
+
+List of additional classes which your table classes will use.
+
+=item constraint
+
+Only load tables matching regex.
+
+=item exclude
+
+Exclude tables matching regex.
+
+=item debug
+
+Enable debug messages.
+
+=item dsn
+
+DBI Data Source Name.
+
+=item namespace
+
+Namespace under which your table classes will be initialized.
+
+=item password
+
+Password.
+
+=item relationships
+
+Try to automatically detect/setup has_a and has_many relationships.
+
+=item inflect
+
+An hashref, which contains exceptions to Lingua::EN::Inflect::PL().
+Useful for foreign language column names.
+
+=item user
+
+Username.
+
+=back
 
 =head1 AUTHOR
 

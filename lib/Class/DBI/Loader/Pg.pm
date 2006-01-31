@@ -5,10 +5,11 @@ use base 'Class::DBI::Loader::Generic';
 use vars '$VERSION';
 use DBI;
 use Carp;
+
 require Class::DBI::Pg;
 require Class::DBI::Loader::Generic;
 
-$VERSION = '0.28';
+$VERSION = '0.29';
 
 =head1 NAME
 
@@ -39,6 +40,19 @@ sub _db_class { return 'Class::DBI::Pg' }
 sub _tables {
     my $self = shift;
     my $dbh = DBI->connect( @{ $self->{_datasource} } ) or croak($DBI::errstr);
+
+    # we do this check here because we don't really want to include this as
+    # a pre-requisite in the Makefile.PL for all those non-Pg users
+    my $sth = $dbh->prepare("SELECT version()");
+    $sth->execute();
+    my($vstr) = $sth->fetchrow_array();
+    $sth->finish;
+
+    my($pg_version) = $vstr =~ /^PostgreSQL ([\d\.]{3})/;
+    if ($pg_version >= 8 && $Class::DBI::Pg::VERSION < 0.07) {
+        die "Class::DBI::Pg $Class::DBI::Pg::VERSION does not support PostgreSQL > 8.x";
+    }
+
     my @tables = ( $DBD::Pg::VERSION >= 1.31 ) ?
         $dbh->tables( undef, "public", "", "table",
             { noprefix => 1, pg_noprefix => 1 } ) :

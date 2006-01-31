@@ -3,7 +3,7 @@ package Class::DBI::Loader;
 use strict;
 use vars '$VERSION';
 
-$VERSION = '0.28';
+$VERSION = '0.29';
 
 =head1 NAME
 
@@ -17,6 +17,7 @@ Class::DBI::Loader - Dynamic definition of Class::DBI sub classes.
     dsn                     => "dbi:mysql:dbname",
     user                    => "root",
     password                => "",
+    options                 => { RaiseError => 1, AutoCommit => 0 },
     namespace               => "Data",
     additional_classes      => qw/Class::DBI::AbstractSearch/, # or arrayref
     additional_base_classes => qw/My::Stuff/, # or arrayref
@@ -123,6 +124,10 @@ Namespace under which your table classes will be initialized.
 =item password
 
 Password.
+
+=item options
+
+Optional hashref to specify DBI connect options
 
 =item relationships
 

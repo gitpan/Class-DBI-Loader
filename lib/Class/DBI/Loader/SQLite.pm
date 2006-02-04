@@ -9,7 +9,7 @@ use Carp;
 require Class::DBI::SQLite;
 require Class::DBI::Loader::Generic;
 
-$VERSION = '0.29';
+$VERSION = '0.30';
 
 =head1 NAME
 

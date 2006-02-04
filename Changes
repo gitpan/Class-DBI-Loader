@@ -1,5 +1,11 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.30  Sat Feb 04 23:05:00 2006
+        - I had completely misunderstood the subtle semantics of the
+          way the classes were being constructed, especially the
+          class hierarchy created by additional_base and left_base.
+          The old behavior has been restored.
+
 0.29  Tue Jan 31 11:12:00 2006
         - Document 'options' parameter
         - Explicitly require Class::DBI::Pg >= 0.07 when the target

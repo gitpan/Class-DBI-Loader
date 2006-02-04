@@ -5,7 +5,7 @@ use vars qw($VERSION);
 use Carp;
 use Lingua::EN::Inflect;
 
-$VERSION = '0.29';
+$VERSION = '0.30';
 
 =head1 NAME
 
@@ -140,9 +140,9 @@ sub _load_classes {
     my @tables          = $self->_tables();
     my $db_class        = $self->_db_class();
     my $additional      = join '', map "use $_;\n", @{ $self->{_additional} };
-    my $additional_base = 
-        sprintf("use base qw(%s)\n", join(' ', 
-            (@{ $self->{_left_base} }, @{ $self->{_additional_base} })));
+    my $additional_base = join '', map "use base '$_';\n",
+      @{ $self->{_additional_base} };
+    my $left_base  = join '', map "use base '$_';\n", @{ $self->{_left_base} };
     my $constraint = $self->{_constraint};
     my $exclude    = $self->{_exclude};
 
@@ -152,9 +152,10 @@ sub _load_classes {
         next if ( defined $exclude && $table =~ /$exclude/ );
         my $class = $self->_table2class($table);
         warn qq/\# Initializing table "$table" as "$class"\n/ if $self->debug;
-        no strict 'refs';
-        @{"$class\::ISA"} = $db_class;
-
+        {
+            no strict 'refs';
+            @{"$class\::ISA"} = $db_class;
+        }
         if ($use_connection) {
             $class->connection(@{$self->{_datasource}});
         } else {
@@ -162,12 +163,16 @@ sub _load_classes {
         }
         $class->set_up_table($table);
         $self->{CLASSES}->{$table} = $class;
-        my $code = "package $class;\n$additional_base$additional";
+
+        my $code = "package $class;$additional_base$additional$left_base";
         warn qq/$code/  if $self->debug;
         warn qq/$class->table('$table');\n\n/ if $self->debug;
         eval $code;
         croak qq/Couldn't load additional classes "$@"/ if $@;
-        unshift @{"$class\::ISA"}, $_ foreach ( @{ $self->{_left_base} } );
+        {
+            no strict 'refs';
+            unshift @{"$class\::ISA"}, $_ foreach ( @{ $self->{_left_base} } );
+        }
     }
 }
 

@@ -1,6 +1,6 @@
 use strict;
 use Test::More tests => 9;
-
+use lib("t/lib");
 use Class::DBI::Loader;
 
 my $dbh;

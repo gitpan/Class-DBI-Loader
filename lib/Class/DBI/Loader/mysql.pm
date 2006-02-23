@@ -43,7 +43,7 @@ sub _relationships {
     my $dbh    = $self->find_class( $tables[0] )->db_Main;
     my $dsn    = $self->{_datasource}[0];
     my %conn   =
-      $dsn =~ m/\Adbi:\w+(?:\(.*?\))?:(.+)\z/i
+      $dsn =~ m/^dbi:\w+:([\w=]+)/i
       && index( $1, '=' ) >= 0
       ? split( /[=;]/, $1 )
       : ( database => $1 );

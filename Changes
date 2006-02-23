@@ -1,5 +1,9 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.31  Thu Feb 23 18:10:00 2006
+        - Fix Class::DBI::Loader::mysql (rt #13689). Patch by Raphael Kraus
+        - Add missing use lib in t/04mysql.t
+
 0.30  Sat Feb 04 23:05:00 2006
         - I had completely misunderstood the subtle semantics of the
           way the classes were being constructed, especially the

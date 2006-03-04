@@ -50,19 +50,39 @@ sub _relationships {
     my $dbname = $conn{database} || $conn{dbname} || $conn{db};
     die("Can't figure out the table name automatically.") if !$dbname;
     my $quoter = $dbh->get_info(29);
+    my $is_mysql5 = $dbh->get_info(18) =~ /^5./;
 
     foreach my $table (@tables) {
-        my $query = "SHOW TABLE STATUS FROM $dbname LIKE '$table'";
-        my $sth   = $dbh->prepare($query)
-          or die("Cannot get table status: $table");
-        $sth->execute;
-        my $comment = $sth->fetchrow_hashref->{comment};
-        $comment =~ s/$quoter//g if ($quoter);
-        while ( $comment =~ m!\(`?(\w+)`?\)\sREFER\s`?\w+/(\w+)`?\(`?\w+`?\)!g ) {
-            eval { $self->_has_a_many( $table, $1, $2 ) };
-            warn qq/\# has_a_many failed "$@"\n\n/ if $@ && $self->debug;
+        if ( $is_mysql5 ) {
+            my $query = qq(
+                SELECT column_name,
+                       referenced_table_name
+                  FROM information_schema.key_column_usage
+                 WHERE referenced_table_name IS NOT NULL
+                   AND table_schema = ?
+                   AND table_name = ?
+            );
+            my $sth = $dbh->prepare($query)
+                or die("Cannot get table information: $table");
+            $sth->execute($dbname, $table);
+            while ( my $data = $sth->fetchrow_hashref ) {
+                eval { $self->_has_a_many( $table, $data->{column_name}, $data->{referenced_table_name} ) };
+                warn qq/\# has_a_many failed "$@"\n\n/ if $@ && $self->debug;
+            }
+            $sth->finish;
+        } else {
+            my $query = "SHOW TABLE STATUS FROM $dbname LIKE '$table'";
+            my $sth   = $dbh->prepare($query)
+              or die("Cannot get table status: $table");
+            $sth->execute;
+            my $comment = $sth->fetchrow_hashref->{comment};
+            $comment =~ s/$quoter//g if ($quoter);
+            while ( $comment =~ m!\(`?(\w+)`?\)\sREFER\s`?\w+/(\w+)`?\(`?\w+`?\)!g ) {
+                eval { $self->_has_a_many( $table, $1, $2 ) };
+                warn qq/\# has_a_many failed "$@"\n\n/ if $@ && $self->debug;
+            }
+            $sth->finish;
         }
-        $sth->finish;
     }
 }
 

@@ -57,6 +57,7 @@ sub _tables {
         $dbh->tables( undef, "public", "", "table",
             { noprefix => 1, pg_noprefix => 1 } ) :
         $dbh->tables;
+    $dbh->disconnect;
     return @tables;
 }
 

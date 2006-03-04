@@ -106,6 +106,8 @@ sub _tables {
         next unless lc( $row->{type} ) eq 'table';
         push @tables, $row->{tbl_name};
     }
+    $sth->finish;
+    $dbh->disconnect;
     return @tables;
 }
 

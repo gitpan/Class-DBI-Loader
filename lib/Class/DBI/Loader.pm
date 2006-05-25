@@ -3,7 +3,7 @@ package Class::DBI::Loader;
 use strict;
 use vars '$VERSION';
 
-$VERSION = '0.32';
+$VERSION = '0.33';
 
 =head1 NAME
 
@@ -25,7 +25,8 @@ Class::DBI::Loader - Dynamic definition of Class::DBI sub classes.
     constraint              => '^foo.*',
     relationships           => 1,
     options                 => { AutoCommit => 1 }, 
-    inflect                 => { child => 'children' }
+    inflect                 => { child => 'children' },
+    require                 => 1
   );
   my $class = $loader->find_class('film'); # $class => Data::Film
   my $obj = $class->retrieve(1);
@@ -141,6 +142,16 @@ Useful for foreign language column names.
 =item user
 
 Username.
+
+=item require
+
+Attempt to require the dynamically defined module, so that extensions
+defined in files. By default errors from imported modules are suppressed.
+When you want to debug, use require_warn.
+
+=item require_warn
+
+Warn of import errors when requiring modules.
 
 =back
 

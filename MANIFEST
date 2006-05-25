@@ -16,3 +16,4 @@ t/05pg.t
 t/06sqlite.t
 t/lib/LoaderBase.pm
 t/lib/LoaderLeft.pm
+t/lib/SQLiteTest/LoaderTest1.pm

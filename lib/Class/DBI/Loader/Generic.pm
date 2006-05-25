@@ -49,6 +49,8 @@ sub new {
         _exclude         => $args{exclude},
         _relationships   => $args{relationships},
         _inflect         => $args{inflect},
+        _require         => $args{require},
+        _require_warn    => $args{require_warn},
         CLASSES          => {},
     }, $class;
     warn qq/\### START Class::DBI::Loader dump ###\n/ if $self->debug;
@@ -172,6 +174,13 @@ sub _load_classes {
         {
             no strict 'refs';
             unshift @{"$class\::ISA"}, $_ foreach ( @{ $self->{_left_base} } );
+        }
+
+        if ($self->{_require}) {
+            eval "require $class";
+            if ($self->{_require_warn} && $@ && $@ !~ /Can't locate/) {
+                warn;
+            }
         }
     }
 }

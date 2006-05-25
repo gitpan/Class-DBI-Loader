@@ -1,5 +1,8 @@
 Revision history for Perl extension Class::DBI::Loader
 
+0.33
+       - Implement the 'require' parameter. Suggested by esh at exile.ru
+
 0.32  Sun Mar 05 01:10:00 2006
         - Explicitly disconnect inside _table() for SQLite.pm and Pg.pm
         - Apply patch from rt #17546, and work with foreign keys in mysql 5.

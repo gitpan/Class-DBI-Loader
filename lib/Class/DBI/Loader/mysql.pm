@@ -5,6 +5,7 @@ use base 'Class::DBI::Loader::Generic';
 use vars '$VERSION';
 use DBI;
 use Carp;
+use Class::DBI;
 require Class::DBI::mysql;
 require Class::DBI::Loader::Generic;
 

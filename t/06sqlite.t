@@ -11,7 +11,7 @@ BEGIN {
     eval $use_statements;
     plan skip_all => $skip_message if $@;
 
-    plan tests => 14;
+    plan tests => 15;
 }
 
 use Class::DBI::Loader;
@@ -93,7 +93,9 @@ my $loader = Class::DBI::Loader->new
      constraint    => '^loader_test.*',
      relationships => 1,
      additional_base_classes => 'LoaderBase',
-     left_base_classes => 'LoaderLeft'
+     left_base_classes => 'LoaderLeft',
+     require => 1,
+    require_warn => 1
     );
 is( $loader->find_class("loader_test1"), "SQLiteTest::LoaderTest1" );
 is( $loader->find_class("loader_test2"), "SQLiteTest::LoaderTest2" );
@@ -122,6 +124,10 @@ my $class4 = $loader->find_class("loader_test4");
 my $obj4 = $class4->retrieve(1);
 is( $obj4->loader_test2->isa('SQLiteTest::LoaderTest2'), 1 );
 is( ref($obj4->id2), '' );     # mulit-col fk def should not be parsed
+
+# check for extension found in SQLiteTest::LoaderTest1
+is($obj->dat_double, "foofoo");
+
 for ($class1, $class2, $class3, $class4) {
     $_->db_Main->disconnect;
 }

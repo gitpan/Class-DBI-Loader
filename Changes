@@ -1,6 +1,10 @@
 Revision history for Perl extension Class::DBI::Loader
 
-0.33
+0.34  Thu Mar 22 20:30:00 2007
+       - Apply patch by Kim Scheibel to allow mysql table with catalog
+         name separators
+
+0.33  Thu May 25 00:00:00 2006
        - Implement the 'require' parameter. Suggested by esh at exile.ru
 
 0.32  Sun Mar 05 01:10:00 2006

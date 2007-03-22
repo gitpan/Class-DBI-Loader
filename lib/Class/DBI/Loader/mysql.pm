@@ -92,6 +92,10 @@ sub _tables {
     my $dbh = DBI->connect( @{ $self->{_datasource} } ) or croak($DBI::errstr);
     my @tables;
     foreach my $table ( $dbh->tables ) {
+        if(my $catalog_sep = quotemeta($dbh->get_info(41))) {
+          $table = (split($catalog_sep, $table))[-1]
+            if $table =~ m/$catalog_sep/;
+        }
         my $quoter = $dbh->get_info(29);
         $table =~ s/$quoter//g if ($quoter);
         push @tables, $1
